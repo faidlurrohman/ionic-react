@@ -1,23 +1,40 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import React from 'react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonButton,
+  IonLoading,
+} from "@ionic/react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router";
+import { logoutUser } from "../config/firebaseConfig";
 
 const Home: React.FC = () => {
+  const user = useSelector((state: any) => state.user);
+  const history = useHistory();
+  const [busy, setBusy] = useState(false);
+
+  const doLogout = async () => {
+    setBusy(true);
+    await logoutUser();
+    history.replace("/");
+    setBusy(false);
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Blank</IonTitle>
+          <IonTitle size="large">Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer />
+      <IonLoading isOpen={busy} message={"Logging out..."} duration={0} />
+      <IonContent className="ion-padding" fullscreen>
+        <IonTitle>Hello {user.username}</IonTitle>
+        <IonButton onClick={doLogout}>Logout</IonButton>
       </IonContent>
     </IonPage>
   );
